@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Storage Converter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        pre.diagram {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-light py-5">
+<div class="container">
+    <div class="card shadow p-4">
+        <h2 class="text-center mb-4">Computer Data Storage and Memory Converter</h2>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="tabMenu" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="converter-tab" data-bs-toggle="tab" data-bs-target="#converter" type="button" role="tab">Converter</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">History & Description</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="converter" role="tabpanel">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="number" id="inputValue" class="form-control" placeholder="Enter value">
+                    </div>
+                    <div class="col-md-4">
+                        <select id="inputUnit" class="form-select">
+                            <option value="bit" title="Smallest unit, 0 or 1">bit</option>
+                            <option value="nibble" title="4 bits">nibble</option>
+                            <option value="B" title="8 bits, base unit">B (byte)</option>
+                            <option value="KiB" title="Binary 1024 bytes">KiB (kibibyte)</option>
+                            <option value="MiB" title="Binary 1024^2 bytes">MiB (mebibyte)</option>
+                            <option value="GiB" title="Binary 1024^3 bytes">GiB (gibibyte)</option>
+                            <option value="TiB" title="Binary 1024^4 bytes">TiB (tebibyte)</option>
+                            <option value="PiB" title="Binary 1024^5 bytes">PiB (pebibyte)</option>
+                            <option value="EiB" title="Binary 1024^6 bytes">EiB (exbibyte)</option>
+                            <option value="ZiB" title="Binary 1024^7 bytes">ZiB (zebibyte)</option>
+                            <option value="YiB" title="Binary 1024^8 bytes">YiB (yobibyte)</option>
+                            <option value="KB" title="Decimal 1000 bytes">KB (kilobyte)</option>
+                            <option value="MB" title="Decimal 1000^2 bytes">MB (megabyte)</option>
+                            <option value="GB" title="Decimal 1000^3 bytes">GB (gigabyte)</option>
+                            <option value="TB" title="Decimal 1000^4 bytes">TB (terabyte)</option>
+                            <option value="PB" title="Decimal 1000^5 bytes">PB (petabyte)</option>
+                            <option value="EB" title="Decimal 1000^6 bytes">EB (exabyte)</option>
+                            <option value="ZB" title="Decimal 1000^7 bytes">ZB (zettabyte)</option>
+                            <option value="YB" title="Decimal 1000^8 bytes">YB (yottabyte)</option>
+                            <option value="RB" title="Decimal 1000^9 bytes">RB (ronnabyte)</option>
+                            <option value="QB" title="Decimal 1000^10 bytes">QB (quettabyte)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="convertBtn" class="btn btn-primary w-100">Convert</button>
+                    </div>
+                </div>
+
+                <div class="form-check my-3">
+                    <input class="form-check-input" type="checkbox" value="" id="showDiagram">
+                    <label class="form-check-label" for="showDiagram">
+                        Show Diagram Flow
+                    </label>
+                </div>
+
+                <pre id="diagram" class="diagram d-none">
+                 bit
+                  |
+                nibble
+                  |
+                 byte (B)
+                  |
+        -------------------------
+        |                       |
+     Binary                  Decimal
+      (Base 1024)             (Base 1000)
+        |                       |
+       KiB                      KB
+       MiB                      MB
+       GiB                      GB
+       TiB                      TB
+       PiB                      PB
+       EiB                      EB
+       ZiB                      ZB
+       YiB                      YB
+                               RB
+                               QB
+                </pre>
+
+                <div class="alert alert-info small" title="Base units are foundational and used to calculate binary and decimal units">
+                    <b>Understanding Units</b>:<br>
+                    <b>bit</b> = smallest unit • <b>nibble</b> = 4 bits • <b>byte (B)</b> = 8 bits<br>
+                    <b>Binary (IEC)</b> uses 1024 steps (KiB, MiB, GiB...) • <b>Decimal (SI)</b> uses 1000 steps (KB, MB, GB...)
+                </div>
+
+                <h4 class="mt-4" title="Base units are foundational">Base Unit</h4>
+                <table class="table table-bordered text-center mb-4">
+                    <thead><tr><th>Unit</th><th>Value</th></tr></thead>
+                    <tbody id="baseTable"></tbody>
+                </table>
+
+                <h4 class="mt-4 text-primary" title="Binary units use 1024 bytes per step">Binary Units (IEC / 1024)</h4>
+                <table class="table table-bordered text-center mb-4">
+                    <thead><tr><th>Unit</th><th>Value</th></tr></thead>
+                    <tbody id="binaryTable"></tbody>
+                </table>
+
+                <h4 class="mt-4 text-success" title="Decimal units use 1000 bytes per step">Decimal Units (SI / 1000)</h4>
+                <table class="table table-bordered text-center">
+                    <thead><tr><th>Unit</th><th>Value</th></tr></thead>
+                    <tbody id="decimalTable"></tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <h4>History and Recognition</h4>
+                <p>This page describes the history, recognition, and standards related to computer data storage units:</p>
+                <ul>
+                    <li><b>Bit</b>: Smallest unit of information, introduced in the 1940s.</li>
+                    <li><b>Nibble</b>: 4 bits, used for hexadecimal representation.</li>
+                    <li><b>Byte (B)</b>: 8 bits, standard unit for storage.</li>
+                    <li><b>Binary Units (IEC)</b>: Introduced by IEC in 1998, multiples of 1024 (KiB, MiB, etc.).</li>
+                    <li><b>Decimal Units (SI)</b>: Standardized by ISO/IEC, multiples of 1000 (KB, MB, etc.).</li>
+                </ul>
+				
+				<h3>📌 Base Storage Units (foundational, not grouped)</h3>
+				<table class="table table-bordered">
+					<thead class="table-light">
+						<tr>
+							<th>Unit</th>
+							<th>Description</th>
+							<th>Relationship</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>bit</td><td>Smallest unit</td><td>0 or 1</td></tr>
+						<tr><td>nibble</td><td>4 bits</td><td>half a byte</td></tr>
+						<tr><td>byte (B)</td><td>8 bits</td><td>base unit used to calculate others</td></tr>
+					</tbody>
+				</table>
+
+				<h3>📌 Decimal (SI) Units — start at KB</h3>
+				<table class="table table-bordered">
+					<thead class="table-light">
+						<tr>
+							<th>Unit</th>
+							<th>Meaning</th>
+							<th>Power</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>KB</td><td>Kilobyte</td><td>1000¹ B</td></tr>
+						<tr><td>MB</td><td>Megabyte</td><td>1000² B</td></tr>
+						<tr><td>GB</td><td>Gigabyte</td><td>1000³ B</td></tr>
+						<tr><td>TB</td><td>Terabyte</td><td>1000⁴ B</td></tr>
+						<tr><td>PB</td><td>Petabyte</td><td>1000⁵ B</td></tr>
+						<tr><td>EB</td><td>Exabyte</td><td>1000⁶ B</td></tr>
+						<tr><td>ZB</td><td>Zettabyte</td><td>1000⁷ B</td></tr>
+						<tr><td>YB</td><td>Yottabyte</td><td>1000⁸ B</td></tr>
+						<tr><td>RB</td><td>Ronnabyte</td><td>1000⁹ B</td></tr>
+						<tr><td>QB</td><td>Quettabyte</td><td>1000¹⁰ B</td></tr>
+					</tbody>
+				</table>
+
+				<h3>📌 Binary (IEC) Units — start at KiB</h3>
+				<table class="table table-bordered">
+					<thead class="table-light">
+						<tr>
+							<th>Unit</th>
+							<th>Meaning</th>
+							<th>Power</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>KiB</td><td>Kibibyte</td><td>1024¹ B</td></tr>
+						<tr><td>MiB</td><td>Mebibyte</td><td>1024² B</td></tr>
+						<tr><td>GiB</td><td>Gibibyte</td><td>1024³ B</td></tr>
+						<tr><td>TiB</td><td>Tebibyte</td><td>1024⁴ B</td></tr>
+						<tr><td>PiB</td><td>Pebibyte</td><td>1024⁵ B</td></tr>
+						<tr><td>EiB</td><td>Exbibyte</td><td>1024⁶ B</td></tr>
+						<tr><td>ZiB</td><td>Zebibyte</td><td>1024⁷ B</td></tr>
+						<tr><td>YiB</td><td>Yobibyte</td><td>1024⁸ B</td></tr>
+					</tbody>
+				</table>
+				<h3 class="mt-4 text-warning" title="Memory mapping of Binary and Decimal units">Memory Table</h3>
+				<table class="table table-bordered text-center">
+					<thead>
+						<tr>
+							<th>Binary (IEC)</th>
+							<th>Meaning</th>
+							<th>Decimal (SI)</th>
+							<th>Meaning</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>KiB</td><td>Kibibyte</td><td>KB</td><td>kilobyte</td></tr>
+						<tr><td>MiB</td><td>Mebibyte</td><td>MB</td><td>Megabyte</td></tr>
+						<tr><td>GiB</td><td>Gibibyte</td><td>GB</td><td>Gigabyte</td></tr>
+						<tr><td>TiB</td><td>Tebibyte</td><td>TB</td><td>Terabyte</td></tr>
+					</tbody>
+				</table>
+				<p>References:</p>
+                <ul>
+                    <li><a href="https://en.wikipedia.org/wiki/Byte" target="_blank">Byte</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const binaryUnits = ["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"];
+const decimalUnits = ["KB","MB","GB","TB","PB","EB","ZB","YB","RB","QB"];
+const baseUnits = ["bit","nibble","B"];
+
+const conversionMap = {
+    bit: 1/8, nibble: 1/2, B: 1,
+    KB: 1000, MB: 1000**2, GB: 1000**3, TB: 1000**4, PB: 1000**5,
+    EB: 1000**6, ZB: 1000**7, YB: 1000**8, RB: 1000**9, QB: 1000**10,
+    KiB: 1024, MiB: 1024**2, GiB: 1024**3, TiB: 1024**4, PiB: 1024**5,
+    EiB: 1024**6, ZiB: 1024**7, YiB: 1024**8
+};
+
+function convertToBytes(value, unit) {
+    return value * conversionMap[unit];
+}
+
+$("#convertBtn").click(function () {
+    const value = parseFloat($("#inputValue").val());
+    const unit = $("#inputUnit").val();
+
+    if (isNaN(value)) {
+        alert("Please enter a valid number.");
+        return;
+    }
+
+    const bytes = convertToBytes(value, unit);
+
+    let baseHTML = "", binHTML = "", decHTML = "";
+
+    baseUnits.forEach(u => baseHTML += `<tr><td title='${u}'>${u}</td><td>${(bytes / conversionMap[u]).toLocaleString(undefined, {maximumFractionDigits:6})}</td></tr>`);
+    binaryUnits.forEach(u => binHTML += `<tr><td title='${u}'>${u}</td><td>${(bytes / conversionMap[u]).toLocaleString(undefined, {maximumFractionDigits:6})}</td></tr>`);
+    decimalUnits.forEach(u => decHTML += `<tr><td title='${u}'>${u}</td><td>${(bytes / conversionMap[u]).toLocaleString(undefined, {maximumFractionDigits:6})}</td></tr>`);
+
+    $("#baseTable").html(baseHTML);
+    $("#binaryTable").html(binHTML);
+    $("#decimalTable").html(decHTML);
+});
+
+$('#showDiagram').change(function() {
+    $('#diagram').toggleClass('d-none');
+});
+</script>
+</body>
+</html>
